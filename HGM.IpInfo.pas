@@ -166,7 +166,7 @@ begin
   FEndPointUrl := Value;
 end;
 
-{ TRootDTO }
+{ TDetails }
 
 constructor TDetails.Create;
 begin

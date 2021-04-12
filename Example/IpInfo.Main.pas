@@ -29,7 +29,7 @@ procedure TForm16.Button1Click(Sender: TObject);
 var
   Details: TDetails;
 begin
-  with TIpInfo.Create('f6d3b0cfcff745') do
+  with TIpInfo.Create('token') do
   begin
     if GetDetails(Details, '8.8.8.8') then
     begin
