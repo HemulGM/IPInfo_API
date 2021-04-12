@@ -3,7 +3,7 @@
 
  ```Pascal
 uses 
-  HGM.IPInfo;
+  HGM.IpInfo;
 ... 
 var
   Details: TDetails;
