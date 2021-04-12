@@ -2,6 +2,9 @@
  ipinfo.io API
 
  ```Pascal
+uses 
+  HGM.IPInfo;
+... 
 var
   Details: TDetails;
 begin
