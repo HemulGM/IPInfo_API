@@ -18,3 +18,5 @@ begin
   end;
 end;
 ```
+
+Получить токен можно здесь: https://ipinfo.io/account/home
