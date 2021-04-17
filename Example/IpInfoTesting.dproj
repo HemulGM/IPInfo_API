@@ -3,7 +3,7 @@
         <ProjectGuid>{B167B633-5865-467A-8A0B-42BDD46A7261}</ProjectGuid>
         <ProjectVersion>18.8</ProjectVersion>
         <FrameworkType>FMX</FrameworkType>
-        <MainSource>Project27.dpr</MainSource>
+        <MainSource>IpInfoTesting.dpr</MainSource>
         <Base>True</Base>
         <Config Condition="'$(Config)'==''">Debug</Config>
         <Platform Condition="'$(Platform)'==''">Win32</Platform>
@@ -111,7 +111,7 @@
         <AUP_READ_PHONE_STATE>true</AUP_READ_PHONE_STATE>
         <Icon_MainIcon>$(BDS)\bin\delphi_PROJECTICON.ico</Icon_MainIcon>
         <Icns_MainIcns>$(BDS)\bin\delphi_PROJECTICNS.icns</Icns_MainIcns>
-        <SanitizedProjectName>Project27</SanitizedProjectName>
+        <SanitizedProjectName>IpInfoTesting</SanitizedProjectName>
     </PropertyGroup>
     <PropertyGroup Condition="'$(Base_Android)'!=''">
         <DCC_UsePackage>DBXSqliteDriver;RESTComponents;DBXInterBaseDriver;tethering;bindcompfmx;FmxTeeUI;fmx;FireDACIBDriver;RadiantShapesFmx;MobilePermissions;dbexpress;IndyCore;dsnap;FireDACCommon;FrameStandPackage_10_3;RESTBackendComponents;soapserver;FMXAudioHGM;bindengine;CloudService;FireDACCommonDriver;inet;IndyIPCommon;bindcompdbx;IndyIPServer;IndySystem;fmxFireDAC;FireDAC;FireDACSqliteDriver;FMXTee;soaprtl;DbxCommonDriver;xmlrtl;soapmidas;rtl;DbxClientDriver;CustomIPTransport;FMXGIF100;bindcomp;IndyIPClient;dbxcds;RadiantShapesFmx_Design;dsnapxml;FrostGlassPackage;dbrtl;IndyProtocols;$(DCC_UsePackage)</DCC_UsePackage>
@@ -420,7 +420,7 @@
         <BorlandProject>
             <Delphi.Personality>
                 <Source>
-                    <Source Name="MainSource">Project27.dpr</Source>
+                    <Source Name="MainSource">IpInfoTesting.dpr</Source>
                 </Source>
             </Delphi.Personality>
             <Deployment Version="3">
@@ -439,9 +439,9 @@
                         <Overwrite>true</Overwrite>
                     </Platform>
                 </DeployFile>
-                <DeployFile LocalName="Win32\Debug\Project27.exe" Configuration="Debug" Class="ProjectOutput">
+                <DeployFile LocalName="Win32\Debug\IpInfoTesting.exe" Configuration="Debug" Class="ProjectOutput">
                     <Platform Name="Win32">
-                        <RemoteName>Project27.exe</RemoteName>
+                        <RemoteName>IpInfoTesting.exe</RemoteName>
                         <Overwrite>true</Overwrite>
                     </Platform>
                 </DeployFile>

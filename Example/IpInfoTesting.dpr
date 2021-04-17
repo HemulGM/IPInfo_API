@@ -1,4 +1,4 @@
-program Project27;
+program IpInfoTesting;
 
 uses
   System.StartUpCopy,

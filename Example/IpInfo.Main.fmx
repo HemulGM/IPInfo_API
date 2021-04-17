@@ -37,4 +37,11 @@ object Form16: TForm16
     Viewport.Width = 445.000000000000000000
     Viewport.Height = 301.000000000000000000
   end
+  object Button2: TButton
+    Position.X = 248.000000000000000000
+    Position.Y = 8.000000000000000000
+    TabOrder = 5
+    Text = 'Button2'
+    OnClick = Button2Click
+  end
 end
