@@ -2,8 +2,8 @@ object Form16: TForm16
   Left = 0
   Top = 0
   Caption = 'Form16'
-  ClientHeight = 480
-  ClientWidth = 640
+  ClientHeight = 353
+  ClientWidth = 464
   FormFactor.Width = 320
   FormFactor.Height = 480
   FormFactor.Devices = [Desktop]

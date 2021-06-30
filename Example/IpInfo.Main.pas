@@ -54,6 +54,7 @@ begin
     end;
 
     Memo1.Lines.Add(GetItem('city', '2001:4860:4860::8888'));
+    Memo1.Lines.Add(GetItem('country', '8.8.8.8'));
     Free;
   end;
 end;

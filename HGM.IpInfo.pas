@@ -8,7 +8,9 @@ uses
 type
   TIpInfoException = class(Exception);
 
-  TIpInfoExceptionResponse = class(Exception);
+  TIpInfoExceptionResponse = class(TIpInfoException);
+
+  TIpInfoExceptionRequest = class(TIpInfoException);
 
   TDomains = class
   private
@@ -59,7 +61,7 @@ type
   public
     property Domain: string read FDomain write FDomain;
     property Name: string read FName write FName;
-    property&Type: string read FType write FType;
+    property &Type: string read FType write FType;
   end;
 
   TAsnData = class
@@ -74,7 +76,7 @@ type
     property Domain: string read FDomain write FDomain;
     property Name: string read FName write FName;
     property Route: string read FRoute write FRoute;
-    property&Type: string read FType write FType;
+    property &Type: string read FType write FType;
   end;
 
   TCarrier = class
@@ -93,6 +95,8 @@ type
     FAbuse: TAbuse;
     FAnycast: Boolean;
     FAsn: TAsnData;
+    FBogon: Boolean;
+    FCarrier: TCarrier;
     FCity: string;
     FCompany: TCompany;
     FCountry: string;
@@ -100,14 +104,12 @@ type
     FHostname: string;
     FIp: string;
     FLoc: string;
+    FOrg: string;
     FPostal: Boolean;
     FPrivacy: TPrivacy;
+    FReadme: string;
     FRegion: string;
     FTimezone: string;
-    FBogon: Boolean;
-    FCarrier: TCarrier;
-    FOrg: string;
-    FReadme: string;
   public
     property Abuse: TAbuse read FAbuse write FAbuse;
     property Anycast: Boolean read FAnycast write FAnycast;
@@ -124,8 +126,8 @@ type
     property Org: string read FOrg write FOrg;
     property Postal: Boolean read FPostal write FPostal;
     property Privacy: TPrivacy read FPrivacy write FPrivacy;
-    property Region: string read FRegion write FRegion;
     property Readme: string read FReadme write FReadme;
+    property Region: string read FRegion write FRegion;
     property Timezone: string read FTimezone write FTimezone;
     destructor Destroy; override;
   end;
@@ -175,8 +177,8 @@ type
     FDomain: string;
     FName: string;
     FNum_Ips: Integer;
-    FPrefixes: TArray<TPrefix>;
     FPrefixes6: TArray<TPrefix6>;
+    FPrefixes: TArray<TPrefix>;
     FRegistry: string;
     FType: string;
   public
@@ -186,35 +188,36 @@ type
     property Domain: string read FDomain write FDomain;
     property Name: string read FName write FName;
     property NumIps: Integer read FNum_Ips write FNum_Ips;
-    property Prefixes: TArray<TPrefix> read FPrefixes write FPrefixes;
     property Prefixes6: TArray<TPrefix6> read FPrefixes6 write FPrefixes6;
+    property Prefixes: TArray<TPrefix> read FPrefixes write FPrefixes;
     property Registry: string read FRegistry write FRegistry;
-    property&Type: string read FType write FType;
+    property &Type: string read FType write FType;
     destructor Destroy; override;
   end;
 
   TIpInfo = class
   private
-    FToken: string;
-    FHTTP: THTTPClient;
     FEndPointUrl: string;
-    FTokenAsHeader: Boolean;
+    FHTTP: THTTPClient;
     FRaiseErrors: Boolean;
-    procedure SetEndPointUrl(const Value: string);
+    FToken: string;
+    FTokenAsHeader: Boolean;
     function GetIpInfo(out Value: string; const Method: string; const Target: string; Item: string): Boolean; overload;
     function GetIpInfo<T: class, constructor>(out Value: T; const Method: string; const Target: string): Boolean; overload;
+    procedure SetEndPointUrl(const Value: string);
     procedure SetRaiseErrors(const Value: Boolean);
   public
     constructor Create(const AToken: string = ''; ATokenAsHeader: Boolean = False); reintroduce;
     destructor Destroy; override;
+    function GetASN(out Value: TASN; const Target: string): Boolean;
     function GetDetails(out Value: TDetails; const Target: string = ''): Boolean;
-    function GetRanges(out Value: TRanges; const Target: string = ''): Boolean;
     function GetDomains(out Value: TDomains; const Target: string = ''): Boolean;
     function GetItem(const Item: string; const Target: string = ''): string;
-    function GetASN(out Value: TASN; const Target: string): Boolean;
+    function GetRanges(out Value: TRanges; const Target: string = ''): Boolean;
+    property Client: THTTPClient read FHTTP;
     property EndPointUrl: string read FEndPointUrl write SetEndPointUrl;
-    property TokenAsHeader: Boolean read FTokenAsHeader write FTokenAsHeader;
     property RaiseErrors: Boolean read FRaiseErrors write SetRaiseErrors;
+    property TokenAsHeader: Boolean read FTokenAsHeader write FTokenAsHeader;
   end;
 
 implementation
@@ -229,6 +232,7 @@ begin
   FEndPointUrl := 'https://ipinfo.io';
   FRaiseErrors := False;
   FHTTP := THTTPClient.Create;
+  FHTTP.ResponseTimeout := 5;
   FToken := AToken;
   FTokenAsHeader := ATokenAsHeader;
 end;
@@ -271,41 +275,42 @@ begin
   Value := '';
   Mem := TStringStream.Create;
   try
-    //prepare
-    FTarget := IfThen(not Target.IsEmpty, '/' + Target);
-    FMethod := IfThen(not Method.IsEmpty, '/' + Method);
-    if FTokenAsHeader then
-    begin
-      FUrl := FEndPointUrl + FMethod + FTarget + Item;
-      if not FToken.IsEmpty then
-        FHeaders := [TNameValuePair.Create('Authorization', 'Bearer ' + FToken)];
-    end
-    else
-    begin
-      FUrl := FEndPointUrl + FMethod + FTarget + Item;
-      if not FToken.IsEmpty then
-        FUrl := FUrl + '?token=' + FToken;
-    end;
-    //request
     try
-      FSCode := FHTTP.Get(FUrl, Mem, FHeaders).StatusCode;
+      //prepare
+      FTarget := IfThen(not Target.IsEmpty, '/' + Target);
+      FMethod := IfThen(not Method.IsEmpty, '/' + Method);
+      FUrl := FEndPointUrl + FMethod + FTarget + Item;
+      if not FToken.IsEmpty then
+      begin
+        if FTokenAsHeader then
+          FHeaders := [TNameValuePair.Create('Authorization', 'Bearer ' + FToken)]
+        else
+          FUrl := FUrl + '?token=' + FToken;
+      end;
+
+      //request
+      try
+        FSCode := FHTTP.Get(FUrl, Mem, FHeaders).StatusCode;
+      except
+        on E: Exception do
+          if FRaiseErrors then
+            raise TIpInfoExceptionRequest.Create(E.Message);
+      end;
+
+      //procces
+      if FSCode = 200 then
+      begin
+        if Mem.Size > 0 then
+          Value := Mem.DataString
+        else if FRaiseErrors then
+          raise TIpInfoExceptionResponse.Create('Response error. Data is empty');
+      end
+      else if FRaiseErrors then
+        raise TIpInfoExceptionRequest.Create('Response error. Status code ' + FSCode.ToString);
     except
       on E: Exception do
         if FRaiseErrors then
-          raise TIpInfoExceptionResponse.Create(E.Message);
-    end;
-    //procces
-    if FSCode = 200 then
-    begin
-      if Mem.Size > 0 then
-        Value := Mem.DataString
-      else if FRaiseErrors then
-        raise TIpInfoExceptionResponse.Create('Response error. Data is empty');
-    end
-    else
-    begin
-      if FRaiseErrors then
-        raise TIpInfoException.Create('Response error. Status code ' + FSCode.ToString);
+          raise TIpInfoException.Create(E.Message);
     end;
   finally
     Mem.Free;
@@ -317,15 +322,14 @@ function TIpInfo.GetIpInfo<T>(out Value: T; const Method: string; const Target: 
 var
   FResponse: string;
 begin
-  Result := GetIpInfo(FResponse, Method, Target, '/json');
-  if Result then
+  if GetIpInfo(FResponse, Method, Target, '/json') then
   try
     Value := TJson.JsonToObject<T>(FResponse);
   except
     Value := nil;
   end
   else
-    Exit;
+    Exit(False);
   Result := Assigned(Value);
 end;
 
