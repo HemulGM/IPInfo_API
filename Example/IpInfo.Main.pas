@@ -34,27 +34,31 @@ var
   Ranges: TRanges;
 begin
   with TIpInfo.Create('', True) do
-  begin
+  try
     if GetDetails(Details, '2001:4860:4860::8888') then
-    begin
+    try
       Memo1.Lines.Add(Details.Country);
+    finally
       Details.Free;
     end;
 
     if GetDomains(Domains, '8.8.8.8') then
-    begin
+    try
       Memo1.Lines.Add(Domains.Total.ToString);
+    finally
       Domains.Free;
     end;
 
     if GetRanges(Ranges, '8.8.8.8') then
-    begin
+    try
       Memo1.Lines.Add(Ranges.Domain);
+    finally
       Ranges.Free;
     end;
 
     Memo1.Lines.Add(GetItem('city', '2001:4860:4860::8888'));
     Memo1.Lines.Add(GetItem('country', '8.8.8.8'));
+  finally
     Free;
   end;
 end;
@@ -68,8 +72,9 @@ begin
   //IpInfo.RaiseErrors := True;
   try
     if IpInfo.GetASN(ASN, 'AS7922') then
-    begin
+    try
       Memo1.Lines.Add(ASN.Domain);
+    finally
       ASN.Free;
     end;
   finally
