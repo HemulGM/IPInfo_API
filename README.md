@@ -8,12 +8,14 @@ var
   Details: TDetails;
 begin
   with TIpInfo.Create('') do
-  begin
+  try
     if GetDetails(Details, '8.8.8.8') then
-    begin
+    try
       Memo1.Lines.Add(Details.Country);
+    finally  
       Details.Free;
     end;
+  finally  
     Free;
   end;
 end;
@@ -28,8 +30,9 @@ begin
   IpInfo.RaiseErrors := True;
   try
     if IpInfo.GetASN(ASN, 'AS7922') then
-    begin
+    try
       Memo1.Lines.Add(ASN.Domain);
+    finally  
       ASN.Free;
     end;
   finally
