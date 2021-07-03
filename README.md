@@ -30,8 +30,9 @@ begin
   IpInfo.RaiseErrors := True;
   try
     if IpInfo.GetASN(ASN, 'AS7922') then
-    begin
+    try
       Memo1.Lines.Add(ASN.Domain);
+    finally  
       ASN.Free;
     end;
   finally
