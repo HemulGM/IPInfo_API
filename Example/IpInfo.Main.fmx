@@ -8,12 +8,12 @@ object Form16: TForm16
   FormFactor.Height = 480
   FormFactor.Devices = [Desktop]
   DesignerMasterStyle = 0
-  object Button1: TButton
+  object ButtonTest: TButton
     Position.X = 160.000000000000000000
     Position.Y = 8.000000000000000000
     TabOrder = 0
-    Text = 'Button1'
-    OnClick = Button1Click
+    Text = 'ButtonTest'
+    OnClick = ButtonTestClick
   end
   object Edit1: TEdit
     Touch.InteractiveGestures = [LongTap, DoubleTap]
@@ -28,20 +28,71 @@ object Form16: TForm16
   object Memo1: TMemo
     Touch.InteractiveGestures = [Pan, LongTap, DoubleTap]
     DataDetectorTypes = []
+    Lines.Strings = (
+      '{'
+      '  "asn": "AS7922",'
+      '  "name": "Comcast Cable Communications, LLC",'
+      '  "country": "US",'
+      '  "allocated": "1997-02-14",'
+      '  "registry": "arin",'
+      '  "domain": "comcast.com",'
+      '  "num_ips": 71224576,'
+      '  "type": "isp",'
+      '  "prefixes": ['
+      '    {'
+      '      "netblock": "104.69.216.0/22",'
+      '      "id": "AKAMAI",'
+      '      "name": "Akamai Technologies, Inc.",'
+      '      "country": "US"'
+      '    },'
+      '    {'
+      '      "netblock": "104.69.220.0/23",'
+      '      "id": "AKAMAI",'
+      '      "name": "Akamai Technologies, Inc.",'
+      '      "country": "US"'
+      '    }'
+      '  ],'
+      '  "prefixes6": ['
+      '    {'
+      '      "netblock": "2601::/20",'
+      '      "id": "COMCAST6NET",'
+      '      "name": "Comcast Cable Communications, LLC",'
+      '      "country": "US"'
+      '    },'
+      '    {'
+      '      "netblock": "2603:2000::/20",'
+      '      "id": "COMCAST6NET",'
+      '      "name": "Comcast Cable Communications, LLC",'
+      '      "country": "US"'
+      '    },'
+      '    {'
+      '      "netblock": "2603:3000::/24",'
+      '      "id": "COMCAST6NET",'
+      '      "name": "Comcast Cable Communications, LLC",'
+      '      "country": "US"'
+      '    },'
+      '    {'
+      '      "netblock": "2a03:2880:d001::/48",'
+      '      "id": "IE-FACEBOOK-201100822",'
+      '      "name": "Facebook Ireland Ltd",'
+      '      "country": "IE"'
+      '    }'
+      '  ]'
+      '}')
     Position.X = 8.000000000000000000
     Position.Y = 40.000000000000000000
     Size.Width = 449.000000000000000000
     Size.Height = 305.000000000000000000
     Size.PlatformDefault = False
     TabOrder = 3
-    Viewport.Width = 445.000000000000000000
+    Viewport.Width = 429.000000000000000000
     Viewport.Height = 301.000000000000000000
   end
-  object Button2: TButton
+  object ButtonASN: TButton
     Position.X = 248.000000000000000000
     Position.Y = 8.000000000000000000
     TabOrder = 5
-    Text = 'Button2'
-    OnClick = Button2Click
+    Text = 'ButtonASN'
+    OnClick = ButtonASNClick
   end
 end

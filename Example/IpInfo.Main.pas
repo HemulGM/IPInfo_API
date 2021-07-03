@@ -8,12 +8,12 @@ uses
 
 type
   TForm16 = class(TForm)
-    Button1: TButton;
+    ButtonTest: TButton;
     Edit1: TEdit;
     Memo1: TMemo;
-    Button2: TButton;
-    procedure Button1Click(Sender: TObject);
-    procedure Button2Click(Sender: TObject);
+    ButtonASN: TButton;
+    procedure ButtonTestClick(Sender: TObject);
+    procedure ButtonASNClick(Sender: TObject);
   private
     { Private declarations }
   public
@@ -25,13 +25,16 @@ var
 
 implementation
 
+uses
+  REST.Json;
+
 {$R *.fmx}
 
-procedure TForm16.Button1Click(Sender: TObject);
+procedure TForm16.ButtonTestClick(Sender: TObject);
 var
-  Details: TDetails;
-  Domains: TDomains;
-  Ranges: TRanges;
+  Details: TIpDetails;
+  Domains: TIpDomains;
+  Ranges: TIpRanges;
 begin
   with TIpInfo.Create('', True) do
   try
@@ -63,10 +66,10 @@ begin
   end;
 end;
 
-procedure TForm16.Button2Click(Sender: TObject);
+procedure TForm16.ButtonASNClick(Sender: TObject);
 var
   IpInfo: TIpInfo;
-  ASN: TASN;
+  ASN: TIpASN;
 begin
   IpInfo := TIpInfo.Create('', True);
   //IpInfo.RaiseErrors := True;
