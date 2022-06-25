@@ -23,20 +23,16 @@ end;
 
  ```Pascal
 var
-  IpInfo: TIpInfo;
+  IpInfo: IIpInfo;
   ASN: TASN;
 begin
   IpInfo := TIpInfo.Create('', True);
   IpInfo.RaiseErrors := True;
+  if IpInfo.GetASN(ASN, 'AS7922') then
   try
-    if IpInfo.GetASN(ASN, 'AS7922') then
-    try
-      Memo1.Lines.Add(ASN.Domain);
-    finally  
-      ASN.Free;
-    end;
-  finally
-    IpInfo.Free;
+    Memo1.Lines.Add(ASN.Domain);
+  finally  
+    ASN.Free;
   end;
 end;
 ```
