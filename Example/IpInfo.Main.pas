@@ -3,8 +3,9 @@ unit IpInfo.Main;
 interface
 
 uses
-  System.SysUtils, System.Types, System.UITypes, System.Classes, System.Variants, FMX.Types, FMX.Controls, FMX.Forms,
-  FMX.Graphics, FMX.Dialogs, HGM.IpInfo, FMX.Edit, FMX.Controls.Presentation, FMX.StdCtrls, FMX.ScrollBox, FMX.Memo;
+  System.SysUtils, System.Types, System.UITypes, System.Classes, System.Variants,
+  FMX.Types, FMX.Controls, FMX.Forms, FMX.Graphics, FMX.Dialogs, HGM.IpInfo,
+  FMX.Edit, FMX.Controls.Presentation, FMX.StdCtrls, FMX.ScrollBox, FMX.Memo;
 
 type
   TForm16 = class(TForm)
@@ -68,20 +69,16 @@ end;
 
 procedure TForm16.ButtonASNClick(Sender: TObject);
 var
-  IpInfo: TIpInfo;
+  IpInfo: IIPInfo;
   ASN: TIpASN;
 begin
   IpInfo := TIpInfo.Create('', True);
   //IpInfo.RaiseErrors := True;
+  if IpInfo.GetASN(ASN, 'AS7922') then
   try
-    if IpInfo.GetASN(ASN, 'AS7922') then
-    try
-      Memo1.Lines.Add(ASN.Domain);
-    finally
-      ASN.Free;
-    end;
+    Memo1.Lines.Add(ASN.Domain);
   finally
-    IpInfo.Free;
+    ASN.Free;
   end;
 end;
 

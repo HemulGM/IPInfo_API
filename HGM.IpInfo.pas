@@ -3,8 +3,8 @@ unit HGM.IpInfo;
 interface
 
 uses
-  System.SysUtils, System.Types, System.Classes, System.Rtti, System.Net.HttpClient, REST.Json, REST.JsonReflect,
-  REST.Json.Interceptors;
+  System.SysUtils, System.Classes, System.Rtti, System.Net.HttpClient, REST.Json,
+  REST.JsonReflect;
 
 type
   TIpInfoException = class(Exception);
@@ -14,10 +14,10 @@ type
   TIpInfoExceptionRequest = class(TIpInfoException);
 
   TStringDateTimeInterceptor = class(TJSONInterceptor)
-  protected
+  private
     RTTI: TRttiContext;
   public
-    constructor Create; reintroduce;
+    constructor Create;
     function StringConverter(Data: TObject; Field: string): string; override;
     procedure StringReverter(Data: TObject; Field: string; Arg: string); override;
   end;
@@ -193,14 +193,68 @@ type
     destructor Destroy; override;
   end;
 
-  TIpInfo = class
+  IIPInfo = interface
+    ['{C70419E4-0A47-49A9-B922-0259F49566F4}']
+    function GetEndPointUrl: string;
+    function GetRaiseErrors: Boolean;
+    function GetHTTP: THTTPClient;
+    function GetTokenAsHeader: Boolean;
+    procedure SetTokenAsHeader(const Value: Boolean);
+    procedure SetEndPointUrl(const Value: string);
+    procedure SetRaiseErrors(const Value: Boolean);
+    function GetData(out Value: string; const Method: string; const Target: string; Item: string): Boolean;
+    /// <summary>
+    /// ASN info
+    /// </summary>
+    function GetASN(out Value: TIpASN; const Target: string): Boolean;
+    /// <summary>
+    /// Details info
+    /// </summary>
+    function GetDetails(out Value: TIpDetails; const Target: string = ''): Boolean;
+    /// <summary>
+    /// Domains info
+    /// </summary>
+    function GetDomains(out Value: TIpDomains; const Target: string = ''): Boolean;
+    /// <summary>
+    /// Another Item info (sample 'city', '2001:4860:4860::8888')
+    /// </summary>
+    function GetItem(const Item: string; const Target: string = ''): string;
+    /// <summary>
+    /// Ranges info
+    /// </summary>
+    function GetRanges(out Value: TIpRanges; const Target: string = ''): Boolean;
+    /// <summary>
+    /// Direct access to Client
+    /// </summary>
+    property Client: THTTPClient read GetHTTP;
+    /// <summary>
+    /// Change base url
+    /// </summary>
+    property EndPointUrl: string read GetEndPointUrl write SetEndPointUrl;
+    /// <summary>
+    /// Raise all errors
+    /// </summary>
+    property RaiseErrors: Boolean read GetRaiseErrors write SetRaiseErrors;
+    /// <summary>
+    /// Send token as header
+    /// </summary>
+    property TokenAsHeader: Boolean read GetTokenAsHeader write SetTokenAsHeader;
+  end;
+
+  TIpInfo = class(TInterfacedObject, IIPInfo)
   private
     FEndPointUrl: string;
     FHTTP: THTTPClient;
     FRaiseErrors: Boolean;
     FToken: string;
     FTokenAsHeader: Boolean;
+  protected
+    function GetEndPointUrl: string;
+    function GetRaiseErrors: Boolean;
+    function GetHTTP: THTTPClient;
+    function GetTokenAsHeader: Boolean;
     procedure SetEndPointUrl(const Value: string);
+    procedure SetTokenAsHeader(const Value: Boolean);
     procedure SetRaiseErrors(const Value: Boolean);
   public
     constructor Create(const AToken: string = ''; ATokenAsHeader: Boolean = False); reintroduce;
@@ -220,7 +274,7 @@ type
     /// </summary>
     function GetDomains(out Value: TIpDomains; const Target: string = ''): Boolean;
     /// <summary>
-    /// Another Item info
+    /// Another Item info (sample 'city', '2001:4860:4860::8888')
     /// </summary>
     function GetItem(const Item: string; const Target: string = ''): string;
     /// <summary>
@@ -230,19 +284,19 @@ type
     /// <summary>
     /// Direct access to Client
     /// </summary>
-    property Client: THTTPClient read FHTTP;
+    property Client: THTTPClient read GetHTTP;
     /// <summary>
     /// Change base url
     /// </summary>
-    property EndPointUrl: string read FEndPointUrl write SetEndPointUrl;
+    property EndPointUrl: string read GetEndPointUrl write SetEndPointUrl;
     /// <summary>
     /// Raise all errors
     /// </summary>
-    property RaiseErrors: Boolean read FRaiseErrors write SetRaiseErrors;
+    property RaiseErrors: Boolean read GetRaiseErrors write SetRaiseErrors;
     /// <summary>
     /// Send token as header
     /// </summary>
-    property TokenAsHeader: Boolean read FTokenAsHeader write FTokenAsHeader;
+    property TokenAsHeader: Boolean read GetTokenAsHeader write SetTokenAsHeader;
   end;
 
 const
@@ -251,7 +305,7 @@ const
 implementation
 
 uses
-  HGM.ArrayHelper, System.StrUtils, System.Net.UrlClient;
+  System.StrUtils, System.Net.UrlClient;
 
 { TIpInfo }
 
@@ -286,9 +340,29 @@ begin
   Result := GetData(Value, 'domains', Target);
 end;
 
+function TIpInfo.GetEndPointUrl: string;
+begin
+  Result := FEndPointUrl;
+end;
+
+function TIpInfo.GetHTTP: THTTPClient;
+begin
+  Result := FHTTP;
+end;
+
+function TIpInfo.GetRaiseErrors: Boolean;
+begin
+  Result := FRaiseErrors;
+end;
+
 function TIpInfo.GetRanges(out Value: TIpRanges; const Target: string): Boolean;
 begin
   Result := GetData(Value, 'ranges', Target);
+end;
+
+function TIpInfo.GetTokenAsHeader: Boolean;
+begin
+  Result := FTokenAsHeader;
 end;
 
 function TIpInfo.GetData(out Value: string; const Method, Target: string; Item: string): Boolean;
@@ -317,6 +391,7 @@ begin
       end;
 
       //request
+      FSCode := -1;
       try
         FSCode := FHTTP.Get(FUrl, Mem, FHeaders).StatusCode;
       except
@@ -371,6 +446,11 @@ begin
   GetData(Result, '', Target, '/' + Item);
 end;
 
+procedure TIpInfo.SetTokenAsHeader(const Value: Boolean);
+begin
+  FTokenAsHeader := Value;
+end;
+
 procedure TIpInfo.SetEndPointUrl(const Value: string);
 begin
   FEndPointUrl := Value;
@@ -403,9 +483,13 @@ end;
 { TIpASN }
 
 destructor TIpASN.Destroy;
+var
+  Item: TIpPrefix;
 begin
-  TArrayHelp.FreeArrayOfObject<TIpPrefix>(FPrefixes);
-  TArrayHelp.FreeArrayOfObject<TIpPrefix>(FPrefixes6);
+  for Item in FPrefixes do
+    Item.Free;
+  for Item in FPrefixes6 do
+    Item.Free;
   inherited;
 end;
 
