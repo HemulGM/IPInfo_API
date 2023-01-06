@@ -186,8 +186,8 @@ type
     property Domain: string read FDomain write FDomain;
     property Name: string read FName write FName;
     property NumIps: Integer read FNum_Ips write FNum_Ips;
-    property Prefixes6: TArray<TIpPrefix> read FPrefixes6 write FPrefixes6;
     property Prefixes: TArray<TIpPrefix> read FPrefixes write FPrefixes;
+    property Prefixes6: TArray<TIpPrefix> read FPrefixes6 write FPrefixes6;
     property Registry: string read FRegistry write FRegistry;
     property &Type: string read FType write FType;
     destructor Destroy; override;

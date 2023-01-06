@@ -5,7 +5,8 @@ interface
 uses
   System.SysUtils, System.Types, System.UITypes, System.Classes, System.Variants,
   FMX.Types, FMX.Controls, FMX.Forms, FMX.Graphics, FMX.Dialogs, HGM.IpInfo,
-  FMX.Edit, FMX.Controls.Presentation, FMX.StdCtrls, FMX.ScrollBox, FMX.Memo;
+  FMX.Edit, FMX.Controls.Presentation, FMX.StdCtrls, FMX.ScrollBox, FMX.Memo,
+  FMX.Memo.Types;
 
 type
   TForm16 = class(TForm)
@@ -39,29 +40,29 @@ var
 begin
   with TIpInfo.Create('', True) do
   try
-    if GetDetails(Details, '2001:4860:4860::8888') then
+    if GetDetails(Details, Edit1.Text) then
     try
       Memo1.Lines.Add(Details.Country);
     finally
       Details.Free;
     end;
 
-    if GetDomains(Domains, '8.8.8.8') then
+    if GetDomains(Domains, Edit1.Text) then
     try
       Memo1.Lines.Add(Domains.Total.ToString);
     finally
       Domains.Free;
     end;
 
-    if GetRanges(Ranges, '8.8.8.8') then
+    if GetRanges(Ranges, Edit1.Text) then
     try
       Memo1.Lines.Add(Ranges.Domain);
     finally
       Ranges.Free;
     end;
 
-    Memo1.Lines.Add(GetItem('city', '2001:4860:4860::8888'));
-    Memo1.Lines.Add(GetItem('country', '8.8.8.8'));
+    Memo1.Lines.Add(GetItem('city', Edit1.Text));
+    Memo1.Lines.Add(GetItem('country', Edit1.Text));
   finally
     Free;
   end;
